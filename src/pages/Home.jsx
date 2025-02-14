@@ -22,7 +22,7 @@ function Home(){
             setError("Failed to Load movies...")
         }
         finally{
-            setLoading(false);
+            setLoading(false);//doubt here
         }
        }
        loadPopularmovies();
