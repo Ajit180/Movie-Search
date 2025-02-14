@@ -1,5 +1,6 @@
 import MovieCard from "../components/MovieCard";
 import { useState } from 'react'
+import {searchMovies,getPopularMovies} from "../Services/api"
 
 function Home(){
 
