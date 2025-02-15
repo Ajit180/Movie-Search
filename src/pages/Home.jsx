@@ -1,6 +1,6 @@
 import MovieCard from "../components/MovieCard";
 import { useState,useEffect } from 'react'
-import {searchMovies,getPopularMovies} from "../Services/api"
+import {searchMovies,getPopularMovies} from "../Services/api.js"
 
 function Home(){
 
@@ -9,7 +9,7 @@ function Home(){
    const [movies,setMovies]=useState([]);//doubt:what is initial value here
    const [error,setError]=useState(null);
    const [loading,setLoading]=useState(true);
-
+  //Doubt: how the loading is getting true or false in this page explain me that
 
    useEffect(()=>{
        const loadPopularmovies = async()=>{
@@ -28,9 +28,26 @@ function Home(){
        loadPopularmovies();
    },[])
 
-    const handleSearch =(e)=>{
+    const handleSearch  = async(e)=>{
        e.preventDefault();
-       SetSearchQuery('');
+       if(!searchQuery.trim()) return;// here doubt that what is (!) falsy value here what can be that 
+       if(loading) return;
+       setLoading(true);
+       
+       try {
+        const searchResults = await searchMovies(searchQuery);
+        setMovies(searchResults);
+        setError(null);
+       } catch (error) {
+         console.log(error);
+         setError("Failed to search movies...")
+       }
+       finally{
+          setLoading(false);
+       }
+
+       SetSearchQuery("");
+
 
     }
 
@@ -47,11 +64,17 @@ function Home(){
              <button type="submit" className="search-button">Submit</button>
 
         </form>
-        <div className="movies-grid">
-           {movies.map((movie)=>movie.title.toLowerCase().startsWith(searchQuery)&&
-            (<MovieCard movie={movie} key={movie.id} />)
-           )}
-        </div>
+        {error && <div className="error-message"> {error}</div>}
+         {loading?(
+            <div className="loading">Loading...</div>
+         ):(
+            <div className="movies-grid">
+            {movies.map((movie)=>movie.title.toLowerCase().startsWith(searchQuery)&&
+             (<MovieCard movie={movie} key={movie.id} />)
+            )}
+         </div>
+         )}
+        
        </div>
    );
 }
